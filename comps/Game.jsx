@@ -13,7 +13,6 @@ class Game extends React.Component {
         }
     }
     render() {
-        console.log(this.state.board.grid[0][0].name)
         return (
             <RenderBoard
                 className="board"
@@ -23,10 +22,8 @@ class Game extends React.Component {
         )
     }
 
-    handleClick = (square) => {
-        alert(square.color);
-        square.color = "g";
-        this.setState({selected: true})
+    handleClick = () => {
+
     }
 }
 

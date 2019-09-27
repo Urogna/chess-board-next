@@ -9,7 +9,7 @@ export function King(square, color) {
     this.moved = false;
 
     this.possibleSquares = () => {
-        let squares;
+        let squares = [];
         squares.push(this.square.r);
         squares.push(this.square.u);
         squares.push(this.square.d);
@@ -38,7 +38,7 @@ export function Pawn(square, color) {
     this.protected = false;
 
     this.possibleSquares = () => {
-        let squares;
+        let squares = [];
         if(this.color = "w") {
             squares.push(this.square.u);
             if(this.square.u) {
@@ -107,7 +107,7 @@ export function Knight(square, color) {
     this.string = "N";
 
     this.possibleSquares = () => {
-        let squares;
+        let squares = [];
         
         if(this.square.u && this.square.u.u) {
             squares.push(this.square.u.u.l);
@@ -147,7 +147,7 @@ export function Queen(square, color) {
 
 function straight(square) {
     let temp = square.r;
-    let squares;
+    let squares = [];
     while(temp) {
         squares.push(temp);
         if(temp.piece) break;
@@ -175,7 +175,7 @@ function straight(square) {
 }
 
 function diagonal(square) {
-    let squares;
+    let squares = [];
     let temp = square.r;
     while(temp) {
         temp = temp.u;
@@ -216,7 +216,7 @@ function diagonal(square) {
 }
 
 function removeIlligal(squares, color) {
-    let final;
+    let final = [];
 
     squares.forEach(square => {
         if(square) {
