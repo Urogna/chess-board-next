@@ -1,9 +1,10 @@
 import React from 'react';
 
-class Square extends React.Component {
+class RenderSquare extends React.Component {
+
     render() {
         return (
-            <button>
+            <button className={this.color + "_square"}>
                 {this.renderPiece(this.props.piece)}
             </button>
         )
@@ -12,8 +13,10 @@ class Square extends React.Component {
     renderPiece(piece) {
         if(piece) {
             return (
-                <img src={require("../sprites/" + piece.color + piece.name + ".png")}/>
+                <img src={require("../sprites/" + piece.color + "_" + piece.name + ".png")}/>
             )
         } else return null;
     }
 }
+
+export default RenderSquare;

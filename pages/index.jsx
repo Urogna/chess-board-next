@@ -1,6 +1,6 @@
-import Board from '../comps/Board';
+import Game from '../comps/Game';
 
-export default (data) =>
+export default () =>
     <div>
-        <Board squares={data}/>
+        <Game/>
     </div>
