@@ -78,6 +78,7 @@ function Board() {
             let j = 0;
             while(s2) {
                 grid[i][j] = s2;
+                s2.setPosition(i, j);
                 s2 = s2.r;
                 j++;
             }

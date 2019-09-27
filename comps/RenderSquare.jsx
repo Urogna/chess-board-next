@@ -5,7 +5,8 @@ class RenderSquare extends React.Component {
 
     render() {
         return (
-            <button className={this.props.color + "_square" + " square"}>
+            <button className={this.props.color + "_square" + " square"}
+                    onClick={this.props.handleClick.bind(this)}>
                 {this.renderPiece(this.props.piece)}
             </button>
         )

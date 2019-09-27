@@ -13,6 +13,7 @@ class RenderBoard extends React.Component {
                         name={this.props.squares[i][j].name}
                         piece={this.props.squares[i][j].piece}
                         color={this.props.squares[i][j].color}
+                        handleClick={this.props.handleClick}
                     />
                 )
             }

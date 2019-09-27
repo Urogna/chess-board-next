@@ -4,6 +4,7 @@ export default function Square(name, color) {
     this.name = name;
     this.color = color;
     this.piece;
+    this.x; this.y;
     this.u; this.d; this.r; this.l;
 
     this.add = (piece) => {
@@ -14,5 +15,14 @@ export default function Square(name, color) {
         if(!this.piece) alert("can't remove piece!");
         //this.removed.push(this.piece);
         this.piece = null;
+    }
+
+    this.setColor = (color) => {
+        this.color = color;
+    }
+
+    this.setPosition = (x, y) => {
+        this.x = x;
+        this.y = y;
     }
 }
