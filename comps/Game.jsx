@@ -1,6 +1,7 @@
 import React from 'react';
 import RenderBoard from './RenderBoard';
 import Board from '../helpers/Board';
+import '../static/style.css'
 
 class Game extends React.Component {
 
@@ -12,7 +13,7 @@ class Game extends React.Component {
     }
     render() {
         console.log(this.state.board.grid[0][0].name)
-        return <RenderBoard squares={this.state.board.grid}/>
+        return <RenderBoard squares={this.state.board.grid} className="board"/>
     }
 }
 

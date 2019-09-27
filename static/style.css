@@ -1,0 +1,37 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.square {
+    width: 100px;
+    height: 100px;
+}
+
+.w_square {
+    background: #bbb;
+}
+.b_square {
+    background: #555;
+}
+.g_square {
+    background: rgb(105, 105, 105);
+}
+
+body {
+    background: #232323;
+}
+
+.board {
+    position: absolute;
+    padding-top: 30px;
+    margin-left: 50%;
+    left: -400px;
+    width: 800px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+button {
+    border: none;
+}

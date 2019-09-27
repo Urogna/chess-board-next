@@ -1,6 +1,7 @@
 import Game from '../comps/Game';
+import '../static/style.css'
 
 export default () =>
-    <div>
+    <div className="board">
         <Game/>
     </div>

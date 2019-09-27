@@ -9,7 +9,7 @@ class RenderBoard extends React.Component {
             for(let j = 0; j < 8; j++) {
                 console.log(i + "  " + j);
                 row.push(
-                    <RenderSquare 
+                    <RenderSquare
                         name={this.props.squares[i][j].name}
                         piece={this.props.squares[i][j].piece}
                         color={this.props.squares[i][j].color}
