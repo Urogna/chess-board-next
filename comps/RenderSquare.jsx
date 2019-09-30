@@ -1,42 +1,41 @@
 import React from 'react';
-//import {King, Queen, Bishop, Rook, Knight, Pawn} from '../helpers/Piece'
-import '../static/style.css'
+import RenderPiece from './RenderPiece'
+import '../static/style.css';
 
 class RenderSquare extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            square: this.props.square,
+            color: this.props.color
         }
     }
 
     render() {
         return (
-            <button className={this.state.square.color + "_square" + " square"}
-                    onClick={() => {this.handleClicks()}}>
-                {this.renderPiece(this.state.square.piece)}
+            <button className={this.state.color + "_square" + " square"}
+                    onClick={this.handleClicks}>
+                {this.renderPiece()}
             </button>
         )
     }
 
     handleClicks = () => {
-        let piece = this.state.square.piece;
-        let square = this.state.square;
-        square.setColor("g");
-        if(piece) {
-            this.setState({square: square});
-            this.props.handleClick(piece);
-        }       
-        
+        if(this.props.piece) {
+            this.props.handleClick(this.props.pos);
+        }
     }
 
-    renderPiece(piece) {
-        if(piece) {
+    renderPiece() {
+        if(this.props.piece) {
             return (
-                <img src={require("../sprites/" + piece.color + "_" + piece.name + ".png")}/>
+                <RenderPiece piece={this.props.piece}/>
             )
         } else return null;
+    }
+
+    componentWillReceiveProps(newProps) {
+        this.setState({color: newProps.color})
     }
 }
 
