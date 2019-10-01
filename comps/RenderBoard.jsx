@@ -6,7 +6,7 @@ class RenderBoard extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            board: setUpBoard(null),
+            board: setUpBoard(null), //eventually instead of null => this.props.boardStr
             turn: "w",
             sel: {
                 piece: null,
@@ -69,7 +69,7 @@ function toString(board) {
 
 function setUpBoard(boardStr) {
     if(!boardStr) {
-        boardStr = "rw;nw;bw;qw;kw;bw;nw;rw;pw;pw;pw;pw;pw;pw;pw;pw;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;pb;pb;pb;pb;pb;pb;pb;pb;rb;nb;bb;qb;kb;bb;nb;rb";
+        boardStr = "rw;nw;bw;qw;kw;bw;nw;rw;pw;pw;pw;pw;pw;pw;pw;pw;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;pb;pb;pb;pb;pb;pb;pb;pb;rb;nb;bb;qb;kb;bb;nb;rb;";
     }
     let grid = createArray(8,8);
     let piece = boardStr.split(";");
@@ -143,11 +143,11 @@ function pawn(board, pos, color) {
             board[pos.x - 1][pos.y - 1].piece &&
             board[pos.x - 1][pos.y - 1].piece[1] != color) {
                 possible.push({x: pos.x - 1, y: pos.y - 1});
-            }
+        }
         if(board[pos.x - 1][pos.y + 1] &&
             board[pos.x - 1][pos.y + 1].piece &&
             board[pos.x - 1][pos.y + 1].piece[1] != color) {
-            possible.push({x: pos.x - 1, y: pos.y + 1});
+                possible.push({x: pos.x - 1, y: pos.y + 1});
         }
     }
     return possible;
