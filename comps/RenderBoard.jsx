@@ -7,7 +7,11 @@ class RenderBoard extends React.Component {
         super(props);
         this.state = {
             board: setUpBoard(null),
-            turn: "w"
+            turn: "w",
+            sel: {
+                piece: null,
+                pos: null
+            }
         }
     }
 
@@ -36,14 +40,19 @@ class RenderBoard extends React.Component {
         return this.renderSquares();
     }
 
-    handleClick = (pos) => {
+    handleClick = (pos, piece) => {
         let board = setUpBoard(toString(this.state.board));
-        let possible = getPossible(board, pos);
-        //board[pos.x][pos.y].piece = "";
-        possible.forEach((poss) => {
-            board[poss.x][poss.y].color = "sel";
-        })
-        this.setState({board: board})
+        if(piece) {
+            let possible = getPossible(board, pos);
+            possible.forEach((poss) => {
+                board[poss.x][poss.y].color = "sel";
+            })
+            this.setState({board: board, sel: {piece: piece, pos: pos}})
+        } else {
+            board[pos.x][pos.y].piece = this.state.sel.piece;
+            board[this.state.sel.pos.x][this.state.sel.pos.y].piece = "";
+            this.setState({board: board, sel: {piece: null, pos: null}});
+        }
     }
 }
 

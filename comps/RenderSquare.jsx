@@ -21,8 +21,10 @@ class RenderSquare extends React.Component {
     }
 
     handleClicks = () => {
-        if(this.props.piece) {
-            this.props.handleClick(this.props.pos);
+        console.log(this.state.color)
+        console.log(this.props.piece)
+        if(this.state.color === "sel" || this.props.piece) {
+            this.props.handleClick(this.props.pos, this.props.piece);
         }
     }
 
