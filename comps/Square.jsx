@@ -7,25 +7,23 @@ class Square extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            color: this.props.color
+            sel: this.props.sel
         }
     }
 
     render() {
         return (
-            <button className={this.state.color + "_square" + " square"}
-                    onClick={this.handleClicks}>
-                {this.renderPiece()}
+            <button className={this.props.color + "_square square"}
+                    onClick={this.handleClick}>
+                {this.renderSquare()}
             </button>
         )
     }
 
-    handleClicks = () => {
-        console.log(this.state.color)
-        console.log(this.props.piece)
-        if(this.state.color === "sel" || this.props.piece) {
+    handleClick = () => {
+        //if(this.state.sel || this.props.piece) {
             this.props.handleClick(this.props.pos, this.props.piece);
-        }
+        //}
     }
 
     renderPiece() {
@@ -33,11 +31,23 @@ class Square extends React.Component {
             return (
                 <Piece piece={this.props.piece}/>
             )
-        } else return null;
+        } else return;
+    }
+
+    renderSquare() {
+        if(this.state.sel) {
+            return(
+                <div className="selection square">
+                    {this.renderPiece()}
+                </div>
+            )
+        } else {
+            return this.renderPiece()
+        }
     }
 
     componentWillReceiveProps(newProps) {
-        this.setState({color: newProps.color})
+        this.setState({sel: newProps.sel})
     }
 }
 

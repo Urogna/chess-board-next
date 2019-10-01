@@ -14,8 +14,8 @@
 .b_square {
     background: #555;
 }
-.sel_square {
-    background: #900;
+.selection {
+    background: rgba(130,0,0, 0.4);
 }
 
 body {
