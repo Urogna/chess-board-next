@@ -1,7 +1,7 @@
 import React from 'react'
-import RenderSquare from './RenderSquare'
+import Square from './Square'
 
-class RenderBoard extends React.Component {
+class Board extends React.Component {
 
     constructor(props) {
         super(props);
@@ -22,7 +22,7 @@ class RenderBoard extends React.Component {
             let row = [];
             for(let j = 0; j < 8; j++) {
                 row.push(
-                    <RenderSquare
+                    <Square
                         tag={string[i] + (j + 1)}
                         pos={{x: i, y: j}}
                         color={this.state.board[i][j].color}
@@ -153,4 +153,4 @@ function pawn(board, pos, color) {
     return possible;
 }
 
-export default RenderBoard;
+export default Board;

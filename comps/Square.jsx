@@ -1,8 +1,8 @@
 import React from 'react';
-import RenderPiece from './RenderPiece'
+import Piece from './Piece'
 import '../static/style.css';
 
-class RenderSquare extends React.Component {
+class Square extends React.Component {
 
     constructor(props) {
         super(props);
@@ -31,7 +31,7 @@ class RenderSquare extends React.Component {
     renderPiece() {
         if(this.props.piece) {
             return (
-                <RenderPiece piece={this.props.piece}/>
+                <Piece piece={this.props.piece}/>
             )
         } else return null;
     }
@@ -41,4 +41,4 @@ class RenderSquare extends React.Component {
     }
 }
 
-export default RenderSquare;
+export default Square;

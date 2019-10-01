@@ -1,12 +1,12 @@
 import React from 'react';
-import RenderBoard from './RenderBoard';
+import Board from './Board';
 import '../static/style.css'
 
 class Game extends React.Component {
 
     render() {
         return (
-            <RenderBoard
+            <Board
                 className="board"
                 handleClick={this.handleClick}
             />

@@ -1,7 +1,7 @@
 import React from 'react';
 import '../static/style.css';
 
-class RenderPiece extends React.Component {
+class Piece extends React.Component {
 
     constructor(props) {
         super(props);
@@ -30,4 +30,4 @@ function getPieceName(string) {
     }
 }
 
-export default RenderPiece;
+export default Piece;
