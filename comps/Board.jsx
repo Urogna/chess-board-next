@@ -9,7 +9,7 @@ class Board extends React.Component {
             board: setUpBoard(this.props.boardStr),
             sel: {
                 piece: null,
-                pos: null
+                pos: null,
             }
         }
     }
@@ -50,8 +50,12 @@ class Board extends React.Component {
     }
 
     movePiece(board, pos) {
-        board[pos.x][pos.y].piece = this.state.sel.piece;
+        let temp = board[pos.x][pos.y].piece;
+        board[pos.x][pos.y].piece = "";
         board[this.state.sel.pos.x][this.state.sel.pos.y].piece = "";
+        board[pos.x][pos.y].piece += this.state.sel.piece;
+        removeEnpassant(board);
+        this.handleEnpassant(board, pos, temp);
     }
 
     captureOrSel(board, pos, piece) {
@@ -63,7 +67,10 @@ class Board extends React.Component {
             possible.forEach((poss) => {
                 board[poss.x][poss.y].sel = true;
             })
-            this.setState({board: board, sel: {piece: piece, pos: pos}})
+            this.setState({
+                board: board,
+                sel: {piece: piece, pos: pos},
+            })
         }
     }
 
@@ -72,7 +79,32 @@ class Board extends React.Component {
             this.movePiece(board, pos);
             this.props.handleClick(toString(board));
         } else {
-            this.setState({board: board, sel: {piece: null, pos: null}});
+            this.setState({
+                board: board,
+                sel: {piece: null, pos: null},
+            });
+        }
+    }
+
+    handleEnpassant(board, pos, piece) {
+        if(board[pos.x][pos.y].piece[0] === "p") {
+            if(Math.abs(this.state.sel.pos.x - pos.x) % 2 === 0) {
+                board[pos.x][pos.y].piece += "e";
+            }
+            let i = this.props.turn === "w"? -1 : 1;
+            if(!piece && board[pos.x + i][pos.y].piece) {
+                board[pos.x + i][pos.y].piece = "";
+            }
+        }   
+    }
+}
+
+function removeEnpassant(board) {
+    for(let i=0; i<8; i++) {
+        for(let j=0; j<8; j++) {
+            if(board[i][j].piece.length === 3) {
+                board[i][j].piece = board[i][j].piece.slice(0, -1);
+            }
         }
     }
 }
@@ -148,11 +180,21 @@ function pawn(board, pos, color) {
             board[pos.x + 1][pos.y + 1].piece &&
             board[pos.x + 1][pos.y + 1].piece[1] != color) {
                 temp.push({x: pos.x + 1, y: pos.y + 1});
-            }
+        }
         if(board[pos.x + 1][pos.y - 1] &&
             board[pos.x + 1][pos.y - 1].piece &&
             board[pos.x + 1][pos.y - 1].piece[1] != color) {
-            temp.push({x: pos.x + 1, y: pos.y - 1});
+                temp.push({x: pos.x + 1, y: pos.y - 1});
+        }
+        if(board[pos.x][pos.y + 1] &&
+            board[pos.x][pos.y + 1].piece &&
+            board[pos.x][pos.y + 1].piece[2] === "e") {
+                temp.push({x: pos.x + 1, y: pos.y + 1})
+        }
+        if(board[pos.x][pos.y - 1] &&
+            board[pos.x][pos.y - 1].piece &&
+            board[pos.x][pos.y - 1].piece[2] === "e") {
+                temp.push({x: pos.x + 1, y: pos.y - 1})
         }
     } else {
         if(!board[pos.x - 1][pos.y].piece) {
@@ -170,6 +212,16 @@ function pawn(board, pos, color) {
             board[pos.x - 1][pos.y + 1].piece &&
             board[pos.x - 1][pos.y + 1].piece[1] != color) {
                 temp.push({x: pos.x - 1, y: pos.y + 1});
+        }
+        if(board[pos.x][pos.y + 1] &&
+            board[pos.x][pos.y + 1].piece &&
+            board[pos.x][pos.y + 1].piece[2] === "e") {
+                temp.push({x: pos.x - 1, y: pos.y + 1})
+        }
+        if(board[pos.x][pos.y - 1] &&
+            board[pos.x][pos.y - 1].piece &&
+            board[pos.x][pos.y - 1].piece[2] === "e") {
+                temp.push({x: pos.x - 1, y: pos.y - 1})
         }
     }
     return temp;

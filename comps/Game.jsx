@@ -9,7 +9,8 @@ class Game extends React.Component {
         this.state = {
             boardStr: null,
             turn: "w",
-            key: 0
+            key: 0,
+            special: this.props.special
         }
     }
 
@@ -20,16 +21,18 @@ class Game extends React.Component {
                 className="board"
                 boardStr={this.state.boardStr}
                 turn={this.state.turn}
+                special={this.state.special}
                 handleClick={this.handleClick}
             />
         )
     }
 
-    handleClick = (boardStr) => {
+    handleClick = (boardStr, special) => {
         this.setState({
             boardStr: boardStr,
             turn: this.state.turn === "b"? "w" : "b",
-            key: (this.state.key + 1)
+            key: (this.state.key + 1),
+            special: special
         })
     }
 }
