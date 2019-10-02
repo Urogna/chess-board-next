@@ -6,8 +6,7 @@ class Board extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            board: setUpBoard(null), //eventually instead of null => this.props.boardStr
-            turn: "w",
+            board: setUpBoard(this.props.boardStr),
             sel: {
                 piece: null,
                 pos: null
@@ -32,7 +31,7 @@ class Board extends React.Component {
                     />
                 )
             }
-            all.unshift(row);
+            this.props.turn === "w"? all.unshift(row) : all.push(row);
         }
         return all;
     }
@@ -41,29 +40,40 @@ class Board extends React.Component {
         return this.renderSquares();
     }
 
-    handleClick = (pos, piece) => { //this is too long
+    handleClick = (pos, piece) => {
         let board = setUpBoard(toString(this.state.board));
-        if(piece) {
-            if(this.state.sel.piece && this.state.board[pos.x][pos.y].sel) {
-                this.movePiece(board, pos);
-            } else {
-                let possible = getPossible(board, pos);
-                possible.forEach((poss) => {
-                    board[poss.x][poss.y].sel = true;
-                })
-            }
-            this.setState({board: board, sel: {piece: piece, pos: pos}})
+        if(piece && piece[1] === this.props.turn) {
+            this.captureOrSel(board, pos, piece);
         } else {
-            if(this.state.board[pos.x][pos.y].sel){
-                this.movePiece(board, pos);
-            }
-            this.setState({board: board, sel: {piece: null, pos: null}});
+            this.moveOrUnsel(board, pos)
         }
     }
 
     movePiece(board, pos) {
         board[pos.x][pos.y].piece = this.state.sel.piece;
         board[this.state.sel.pos.x][this.state.sel.pos.y].piece = "";
+    }
+
+    captureOrSel(board, pos, piece) {
+        if(this.state.sel.piece && this.state.board[pos.x][pos.y].sel) {
+            this.movePiece(board, pos);
+            this.props.handleClick(toString(board));
+        } else {
+            let possible = getPossible(board, pos);
+            possible.forEach((poss) => {
+                board[poss.x][poss.y].sel = true;
+            })
+            this.setState({board: board, sel: {piece: piece, pos: pos}})
+        }
+    }
+
+    moveOrUnsel(board, pos) {
+        if(this.state.board[pos.x][pos.y].sel){
+            this.movePiece(board, pos);
+            this.props.handleClick(toString(board));
+        } else {
+            this.setState({board: board, sel: {piece: null, pos: null}});
+        }
     }
 }
 
@@ -266,7 +276,17 @@ function queen(board, pos, color) {
 }
 
 function king(board, pos, color) {
-    return [];
+    let temp = [];
+    temp.push({x: pos.x + 1, y: pos.y + 1});
+    temp.push({x: pos.x, y: pos.y + 1});
+    temp.push({x: pos.x - 1, y: pos.y + 1});
+    temp.push({x: pos.x + 1, y: pos.y});
+    temp.push({x: pos.x + 1, y: pos.y - 1});
+    temp.push({x: pos.x, y: pos.y - 1});
+    temp.push({x: pos.x - 1, y: pos.y});
+    temp.push({x: pos.x - 1, y: pos.y - 1});
+    temp = removeIlligal(temp, board, color);
+    return temp;
 }
 
 function removeOutside(array) {

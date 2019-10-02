@@ -1,21 +1,10 @@
 import React from 'react';
 import '../static/style.css';
 
-class Piece extends React.Component {
-
-    constructor(props) {
-        super(props);
-        this.state = {
-            name: getPieceName(this.props.piece),
-            color: this.props.piece[1],
-        }
-    }
-
-    render() {
-        return (
-            <img src={require("../sprites/" + this.state.color + "_" + this.state.name + ".png")}/>
-        )
-    }
+export default function Piece(props) {
+    return (
+        <img src={require("../sprites/" + props.piece[1] + "_" + getPieceName(props.piece) + ".png")}/>
+    )
 }
 
 function getPieceName(string) {
@@ -29,5 +18,3 @@ function getPieceName(string) {
         case "k": return "king";
     }
 }
-
-export default Piece;
