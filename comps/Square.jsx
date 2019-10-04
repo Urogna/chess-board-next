@@ -21,7 +21,7 @@ class Square extends React.Component {
     }
 
     handleClick = () => {
-        this.props.handleClick(this.props.pos, this.props.piece);
+        this.props.handleClick(this.props.p, this.props.piece);
     
     }
 

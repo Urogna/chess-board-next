@@ -9,7 +9,7 @@ class Board extends React.Component {
             board: setUpBoard(this.props.boardStr),
             sel: {
                 piece: null,
-                pos: null,
+                p: null,
             }
         }
     }
@@ -23,7 +23,7 @@ class Board extends React.Component {
                 row.push(
                     <Square
                         tag={string[i] + (j + 1)}
-                        pos={{x: i, y: j}}
+                        p={{x: i, y: j}}
                         color={this.state.board[i][j].color}
                         piece={this.state.board[i][j].piece}
                         sel={this.state.board[i][j].sel}
@@ -31,7 +31,8 @@ class Board extends React.Component {
                     />
                 )
             }
-            this.props.turn === "w"? all.unshift(row) : all.push(row);
+            all.unshift(row);
+            //if(this.props.turn === "b") all = all.reverse();
         }
         return all;
     }
@@ -40,60 +41,60 @@ class Board extends React.Component {
         return this.renderSquares();
     }
 
-    handleClick = (pos, piece) => {
+    handleClick = (p, piece) => {
         let board = setUpBoard(toString(this.state.board));
         if(piece && piece[1] === this.props.turn) {
-            this.captureOrSel(board, pos, piece);
+            this.captureOrSel(board, p, piece);
         } else {
-            this.moveOrUnsel(board, pos)
+            this.moveOrUnsel(board, p)
         }
     }
 
-    movePiece(board, pos) {
-        let temp = board[pos.x][pos.y].piece;
-        board[pos.x][pos.y].piece = "";
-        board[this.state.sel.pos.x][this.state.sel.pos.y].piece = "";
-        board[pos.x][pos.y].piece += this.state.sel.piece;
+    movePiece(board, p) {
+        let temp = board[p.x][p.y].piece;
+        board[p.x][p.y].piece = "";
+        board[this.state.sel.p.x][this.state.sel.p.y].piece = "";
+        board[p.x][p.y].piece += this.state.sel.piece;
         removeEnpassant(board);
-        this.handleEnpassant(board, pos, temp);
+        this.handleEnpassant(board, p, temp);
     }
 
-    captureOrSel(board, pos, piece) {
-        if(this.state.sel.piece && this.state.board[pos.x][pos.y].sel) {
-            this.movePiece(board, pos);
+    captureOrSel(board, p, piece) {
+        if(this.state.sel.piece && this.state.board[p.x][p.y].sel) {
+            this.movePiece(board, p);
             this.props.handleClick(toString(board));
         } else {
-            let possible = getPossible(board, pos);
-            possible.forEach((poss) => {
-                board[poss.x][poss.y].sel = true;
+            let possible = getPossible(board, p);
+            possible.forEach((ps) => {
+                board[ps.x][ps.y].sel = true;
             })
             this.setState({
                 board: board,
-                sel: {piece: piece, pos: pos},
+                sel: {piece: piece, p: p},
             })
         }
     }
 
-    moveOrUnsel(board, pos) {
-        if(this.state.board[pos.x][pos.y].sel){
-            this.movePiece(board, pos);
+    moveOrUnsel(board, p) {
+        if(this.state.board[p.x][p.y].sel){
+            this.movePiece(board, p);
             this.props.handleClick(toString(board));
         } else {
             this.setState({
                 board: board,
-                sel: {piece: null, pos: null},
+                sel: {piece: null, p: null},
             });
         }
     }
 
-    handleEnpassant(board, pos, piece) {
-        if(board[pos.x][pos.y].piece[0] === "p") {
-            if(Math.abs(this.state.sel.pos.x - pos.x) % 2 === 0) {
-                board[pos.x][pos.y].piece += "e";
+    handleEnpassant(board, p, piece) {
+        if(board[p.x][p.y].piece[0] === "p") {
+            if(Math.abs(this.state.sel.p.x - p.x) % 2 === 0) {
+                board[p.x][p.y].piece += "e";
             }
             let i = this.props.turn === "w"? -1 : 1;
-            if(!piece && board[pos.x + i][pos.y].piece) {
-                board[pos.x + i][pos.y].piece = "";
+            if(!piece && board[p.x + i][p.y].piece) {
+                board[p.x + i][p.y].piece = "";
             }
         }   
     }
@@ -152,200 +153,225 @@ function createArray(length) {
     return arr;
 }
 
-function getPossible(board, pos) {
-    let string = board[pos.x][pos.y].piece;
+function getPossible(board, p) {
+    let string = board[p.x][p.y].piece;
     let piece = string[0];
     let color = string[1];
 
     switch(piece) {
-        case "p": return pawn(board, pos, color);
-        case "r": return rook(board, pos, color);
-        case "n": return knight(board, pos, color);
-        case "b": return bishop(board, pos, color);
-        case "q": return queen(board, pos, color);
-        case "k": return king(board, pos, color);
+        case "p": return pawn(board, p, color);
+        case "r": return rook(board, p, color);
+        case "n": return knight(board, p, color);
+        case "b": return bishop(board, p, color);
+        case "q": return queen(board, p, color);
+        case "k": return king(board, p, color);
     }
 }
 
-function pawn(board, pos, color) {
+function pawn(board, p, color) {
     let temp = [];
     if(color === "w") {
-        if(!board[pos.x + 1][pos.y].piece) {
-            temp.push({x: pos.x + 1, y: pos.y});
-            if(pos.x === 1 && !board[pos.x + 2][pos.y].piece) {
-                temp.push({x: pos.x + 2, y: pos.y});
+        if(!board[p.x + 1][p.y].piece) {
+            temp.push({x: p.x + 1, y: p.y});
+            if(p.x === 1 && !board[p.x + 2][p.y].piece) {
+                temp.push({x: p.x + 2, y: p.y});
             }
         }
-        if(board[pos.x + 1][pos.y + 1] &&
-            board[pos.x + 1][pos.y + 1].piece &&
-            board[pos.x + 1][pos.y + 1].piece[1] != color) {
-                temp.push({x: pos.x + 1, y: pos.y + 1});
+        if(board[p.x + 1][p.y + 1] &&
+            board[p.x + 1][p.y + 1].piece &&
+            board[p.x + 1][p.y + 1].piece[1] != color) {
+                temp.push({x: p.x + 1, y: p.y + 1});
         }
-        if(board[pos.x + 1][pos.y - 1] &&
-            board[pos.x + 1][pos.y - 1].piece &&
-            board[pos.x + 1][pos.y - 1].piece[1] != color) {
-                temp.push({x: pos.x + 1, y: pos.y - 1});
+        if(board[p.x + 1][p.y - 1] &&
+            board[p.x + 1][p.y - 1].piece &&
+            board[p.x + 1][p.y - 1].piece[1] != color) {
+                temp.push({x: p.x + 1, y: p.y - 1});
         }
-        if(board[pos.x][pos.y + 1] &&
-            board[pos.x][pos.y + 1].piece &&
-            board[pos.x][pos.y + 1].piece[2] === "e") {
-                temp.push({x: pos.x + 1, y: pos.y + 1})
+        if(board[p.x][p.y + 1] &&
+            board[p.x][p.y + 1].piece &&
+            board[p.x][p.y + 1].piece[2] === "e") {
+                temp.push({x: p.x + 1, y: p.y + 1})
         }
-        if(board[pos.x][pos.y - 1] &&
-            board[pos.x][pos.y - 1].piece &&
-            board[pos.x][pos.y - 1].piece[2] === "e") {
-                temp.push({x: pos.x + 1, y: pos.y - 1})
+        if(board[p.x][p.y - 1] &&
+            board[p.x][p.y - 1].piece &&
+            board[p.x][p.y - 1].piece[2] === "e") {
+                temp.push({x: p.x + 1, y: p.y - 1})
         }
     } else {
-        if(!board[pos.x - 1][pos.y].piece) {
-            temp.push({x: pos.x - 1, y: pos.y});
-            if(pos.x === 6 && !board[pos.x - 2][pos.y].piece) {
-                temp.push({x: pos.x - 2, y: pos.y});
+        if(!board[p.x - 1][p.y].piece) {
+            temp.push({x: p.x - 1, y: p.y});
+            if(p.x === 6 && !board[p.x - 2][p.y].piece) {
+                temp.push({x: p.x - 2, y: p.y});
             }
         }
-        if(board[pos.x - 1][pos.y - 1] &&
-            board[pos.x - 1][pos.y - 1].piece &&
-            board[pos.x - 1][pos.y - 1].piece[1] != color) {
-                temp.push({x: pos.x - 1, y: pos.y - 1});
+        if(board[p.x - 1][p.y - 1] &&
+            board[p.x - 1][p.y - 1].piece &&
+            board[p.x - 1][p.y - 1].piece[1] != color) {
+                temp.push({x: p.x - 1, y: p.y - 1});
         }
-        if(board[pos.x - 1][pos.y + 1] &&
-            board[pos.x - 1][pos.y + 1].piece &&
-            board[pos.x - 1][pos.y + 1].piece[1] != color) {
-                temp.push({x: pos.x - 1, y: pos.y + 1});
+        if(board[p.x - 1][p.y + 1] &&
+            board[p.x - 1][p.y + 1].piece &&
+            board[p.x - 1][p.y + 1].piece[1] != color) {
+                temp.push({x: p.x - 1, y: p.y + 1});
         }
-        if(board[pos.x][pos.y + 1] &&
-            board[pos.x][pos.y + 1].piece &&
-            board[pos.x][pos.y + 1].piece[2] === "e") {
-                temp.push({x: pos.x - 1, y: pos.y + 1})
+        if(board[p.x][p.y + 1] &&
+            board[p.x][p.y + 1].piece &&
+            board[p.x][p.y + 1].piece[2] === "e") {
+                temp.push({x: p.x - 1, y: p.y + 1})
         }
-        if(board[pos.x][pos.y - 1] &&
-            board[pos.x][pos.y - 1].piece &&
-            board[pos.x][pos.y - 1].piece[2] === "e") {
-                temp.push({x: pos.x - 1, y: pos.y - 1})
+        if(board[p.x][p.y - 1] &&
+            board[p.x][p.y - 1].piece &&
+            board[p.x][p.y - 1].piece[2] === "e") {
+                temp.push({x: p.x - 1, y: p.y - 1})
         }
     }
     return temp;
 }
 
-function knight(board, pos, color) {
+function knight(board, p, color) {
     let temp = [];
-    temp.push({x: pos.x + 2, y: pos.y + 1});
-    temp.push({x: pos.x + 2, y: pos.y - 1});
-    temp.push({x: pos.x + 1, y: pos.y + 2});
-    temp.push({x: pos.x + 1, y: pos.y - 2});
-    temp.push({x: pos.x - 1, y: pos.y + 2});
-    temp.push({x: pos.x - 1, y: pos.y - 2});
-    temp.push({x: pos.x - 2, y: pos.y + 1});
-    temp.push({x: pos.x - 2, y: pos.y - 1});
+    temp.push({x: p.x + 2, y: p.y + 1});
+    temp.push({x: p.x + 2, y: p.y - 1});
+    temp.push({x: p.x + 1, y: p.y + 2});
+    temp.push({x: p.x + 1, y: p.y - 2});
+    temp.push({x: p.x - 1, y: p.y + 2});
+    temp.push({x: p.x - 1, y: p.y - 2});
+    temp.push({x: p.x - 2, y: p.y + 1});
+    temp.push({x: p.x - 2, y: p.y - 1});
     temp = removeIlligal(temp, board, color);
     return temp
 }
 
-function rook(board, pos, color) {
+function rook(board, p, color) {
     let temp = [];
-    for(let i=pos.x+1; i<8; i++) {
-        if(board[i][pos.y].piece) {
-            if(board[i][pos.y].piece[1] != color) {
-                temp.push({x: i, y: pos.y});
+    for(let i=p.x+1; i<8; i++) {
+        if(board[i][p.y].piece) {
+            if(board[i][p.y].piece[1] != color) {
+                temp.push({x: i, y: p.y});
                 break;
-            } else if(board[i][pos.y].piece[1] === color) break;
+            } else if(board[i][p.y].piece[1] === color) break;
         }
-        temp.push({x: i, y: pos.y});
+        temp.push({x: i, y: p.y});
     }
-    for(let i=pos.x-1; i>=0; i--) {
-        if(board[i][pos.y].piece) {
-            if(board[i][pos.y].piece[1] != color) {
-                temp.push({x: i, y: pos.y});
+    for(let i=p.x-1; i>=0; i--) {
+        if(board[i][p.y].piece) {
+            if(board[i][p.y].piece[1] != color) {
+                temp.push({x: i, y: p.y});
                 break;
-            } else if(board[i][pos.y].piece[1] === color) break;
+            } else if(board[i][p.y].piece[1] === color) break;
         }
-        temp.push({x: i, y: pos.y});
+        temp.push({x: i, y: p.y});
     }
-    for(let i=pos.y+1; i<8; i++) {
-        if(board[pos.x][i].piece) {
-            if(board[pos.x][i].piece[1] != color) {
-                temp.push({x: pos.x, y: i});
+    for(let i=p.y+1; i<8; i++) {
+        if(board[p.x][i].piece) {
+            if(board[p.x][i].piece[1] != color) {
+                temp.push({x: p.x, y: i});
                 break;
-            } else if(board[pos.x][i].piece[1] === color) break;
+            } else if(board[p.x][i].piece[1] === color) break;
         }
-        temp.push({x: pos.x, y: i});
+        temp.push({x: p.x, y: i});
     }
-    for(let i=pos.y-1; i>=0; i--) {
-        if(board[pos.x][i].piece) {
-            if(board[pos.x][i].piece[1] != color) {
-                temp.push({x: pos.x, y: i});
+    for(let i=p.y-1; i>=0; i--) {
+        if(board[p.x][i].piece) {
+            if(board[p.x][i].piece[1] != color) {
+                temp.push({x: p.x, y: i});
                 break;
-            } else if(board[pos.x][i].piece[1] === color) break;
+            } else if(board[p.x][i].piece[1] === color) break;
         }
-        temp.push({x: pos.x, y: i});
+        temp.push({x: p.x, y: i});
     }
     return temp;
 }
 
-function bishop(board, pos, color) {
+function bishop(board, p, color) {
     let temp = [];
-    for(let i=1; i<8-Math.max(pos.x,pos.y); i++) {
-        if(board[pos.x + i][pos.y + i].piece) {
-            if(board[pos.x + i][pos.y + i].piece[1] != color) {
-                temp.push({x: pos.x + i, y: pos.y + i});
+    for(let i=1; i<8-Math.max(p.x,p.y); i++) {
+        if(board[p.x + i][p.y + i].piece) {
+            if(board[p.x + i][p.y + i].piece[1] != color) {
+                temp.push({x: p.x + i, y: p.y + i});
                 break;
-            } else if(board[pos.x + i][pos.y + i].piece[1] === color) break;
+            } else if(board[p.x + i][p.y + i].piece[1] === color) break;
         }
-        temp.push({x: pos.x + i, y: pos.y + i});
+        temp.push({x: p.x + i, y: p.y + i});
     }
-    for(let i=1; i<Math.min(pos.x + 1, 8 - pos.y); i++) {
-        if(board[pos.x - i][pos.y + i].piece) {
-            if(board[pos.x - i][pos.y + i].piece[1] != color) {
-                temp.push({x: pos.x - i, y: pos.y + i});
+    for(let i=1; i<Math.min(p.x + 1, 8 - p.y); i++) {
+        if(board[p.x - i][p.y + i].piece) {
+            if(board[p.x - i][p.y + i].piece[1] != color) {
+                temp.push({x: p.x - i, y: p.y + i});
                 break;
-            } else if(board[pos.x - i][pos.y + i].piece[1] === color) break;
+            } else if(board[p.x - i][p.y + i].piece[1] === color) break;
         }
-        temp.push({x: pos.x - i, y: pos.y + i});
+        temp.push({x: p.x - i, y: p.y + i});
     }
-    for(let i=1; i<Math.min(pos.x,pos.y) + 1; i++) {
-        if(board[pos.x - i][pos.y - i].piece) {
-            if(board[pos.x - i][pos.y - i].piece[1] != color) {
-                temp.push({x: pos.x - i, y: pos.y - i});
+    for(let i=1; i<Math.min(p.x,p.y) + 1; i++) {
+        if(board[p.x - i][p.y - i].piece) {
+            if(board[p.x - i][p.y - i].piece[1] != color) {
+                temp.push({x: p.x - i, y: p.y - i});
                 break;
-            } else if(board[pos.x - i][pos.y - i].piece[1] === color) break;
+            } else if(board[p.x - i][p.y - i].piece[1] === color) break;
         }
-        temp.push({x: pos.x - i, y: pos.y - i});
+        temp.push({x: p.x - i, y: p.y - i});
     }
-    for(let i=1; i<Math.min(8 - pos.x, pos.y + 1); i++) {
-        if(board[pos.x + i][pos.y - i].piece) {
-            if(board[pos.x + i][pos.y - i].piece[1] != color) {
-                temp.push({x: pos.x + i, y: pos.y - i});
+    for(let i=1; i<Math.min(8 - p.x, p.y + 1); i++) {
+        if(board[p.x + i][p.y - i].piece) {
+            if(board[p.x + i][p.y - i].piece[1] != color) {
+                temp.push({x: p.x + i, y: p.y - i});
                 break;
-            } else if(board[pos.x + i][pos.y - i].piece[1] === color) break;
+            } else if(board[p.x + i][p.y - i].piece[1] === color) break;
         }
-        temp.push({x: pos.x + i, y: pos.y - i});
+        temp.push({x: p.x + i, y: p.y - i});
     }
     return temp;
 }
 
-function queen(board, pos, color) {
-    return rook(board, pos, color).concat(bishop(board, pos, color));
+function queen(board, p, color) {
+    return rook(board, p, color).concat(bishop(board, p, color));
 }
 
-function king(board, pos, color) {
+function king(board, p, color) {
     let temp = [];
-    temp.push({x: pos.x + 1, y: pos.y + 1});
-    temp.push({x: pos.x, y: pos.y + 1});
-    temp.push({x: pos.x - 1, y: pos.y + 1});
-    temp.push({x: pos.x + 1, y: pos.y});
-    temp.push({x: pos.x + 1, y: pos.y - 1});
-    temp.push({x: pos.x, y: pos.y - 1});
-    temp.push({x: pos.x - 1, y: pos.y});
-    temp.push({x: pos.x - 1, y: pos.y - 1});
+    temp.push({x: p.x + 1, y: p.y + 1});
+    temp.push({x: p.x, y: p.y + 1});
+    temp.push({x: p.x - 1, y: p.y + 1});
+    temp.push({x: p.x + 1, y: p.y});
+    temp.push({x: p.x + 1, y: p.y - 1});
+    temp.push({x: p.x, y: p.y - 1});
+    temp.push({x: p.x - 1, y: p.y});
+    temp.push({x: p.x - 1, y: p.y - 1});
     temp = removeIlligal(temp, board, color);
-    return temp;
+
+    let toRemove = getEnemyPossible(board, color);
+    let final = [];
+    loop1:
+    for(let i=0; i<temp.length; i++) {
+        for(let j=0; j<toRemove.length; j++) {
+            if(temp[i].x === toRemove[j].x && temp[i].y === toRemove[j].y) {
+                continue loop1;
+            }
+        }
+        final.push(temp[i]);
+    }
+
+    return final;
+}
+
+function getEnemyPossible(board, color) {
+    let possible = [];
+    for(let i=0; i<8; i++) {
+        for(let j=0; j<8; j++) {
+            if(board[i][j].piece && board[i][j].piece[1] != color && board[i][j].piece[0] != "k") {
+                possible = possible.concat(getPossible(board, {x: i, y: j}));
+            }
+        }
+    }
+    return possible;
 }
 
 function removeOutside(array) {
     let temp = [];
-    array.forEach((pos) => {
-        if(pos.x < 8 && pos.x >= 0 && pos.y < 8 && pos.y >= 0) {
-            temp.push(pos);
+    array.forEach((p) => {
+        if(p.x < 8 && p.x >= 0 && p.y < 8 && p.y >= 0) {
+            temp.push(p);
         }
     })
     return temp
@@ -354,9 +380,9 @@ function removeOutside(array) {
 function removeIlligal(array, board, color) {
     let temp = removeOutside(array);
     let final = [];
-    temp.forEach((pos) => {
-        if(!board[pos.x][pos.y].piece || board[pos.x][pos.y].piece[1] != color) {
-            final.push(pos);
+    temp.forEach((p) => {
+        if(!board[p.x][p.y].piece || board[p.x][p.y].piece[1] != color) {
+            final.push(p);
         }
     })
     return final
