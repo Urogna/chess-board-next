@@ -65,7 +65,6 @@ class Board extends React.Component {
             this.props.handleClick(toString(board));
         } else {
             let possible = getPossible(board, p);
-            if(piece[0] != "p") possible = removeIlligal(possible, board, piece[1]);
             possible.forEach((ps) => {
                 board[ps.x][ps.y].sel = true;
             })
@@ -126,12 +125,12 @@ function setUpBoard(boardStr) {
     if(!boardStr) {
         boardStr = "rw;nw;bw;qw;kw;bw;nw;rw;pw;pw;pw;pw;pw;pw;pw;pw;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;pb;pb;pb;pb;pb;pb;pb;pb;rb;nb;bb;qb;kb;bb;nb;rb;";
     }
-    let grid = createArray(8,8);
+    let board = createArray(8,8);
     let piece = boardStr.split(";");
     let counter = 0;
     for(let i=0; i<8; i++) {
         for(let j=0; j<8; j++) {
-            grid[i][j] = {
+            board[i][j] = {
                 piece: piece[counter],
                 color: (i + j)%2 === 0? "b" : "w",
                 sel: false
@@ -139,7 +138,7 @@ function setUpBoard(boardStr) {
             counter++;
         }
     }
-    return grid;
+    return board;
 }
 
 function createArray(length) {
@@ -162,7 +161,7 @@ function getPossible(board, p) {
     switch(piece) {
         case "p": return pawn(board, p, color);
         case "r": return rook(board, p, color);
-        case "n": return removeOutside(knight(board, p, color));
+        case "n": return knight(board, p, color);
         case "b": return bishop(board, p, color);
         case "q": return queen(board, p, color);
         case "k": return king(board, p, color);
@@ -178,24 +177,24 @@ function pawn(board, p, color) {
                 temp.push({x: p.x + 2, y: p.y});
             }
         }
-        if(board[p.x + 1][p.y + 1] &&
-            board[p.x + 1][p.y + 1].piece) {
-            //&& board[p.x + 1][p.y + 1].piece[1] != color) {
+        if(board[p.x + 1][p.y + 1] 
+            && board[p.x + 1][p.y + 1].piece
+            && board[p.x + 1][p.y + 1].piece[1] != color) {
                 temp.push({x: p.x + 1, y: p.y + 1});
         }
-        if(board[p.x + 1][p.y - 1] &&
-            board[p.x + 1][p.y - 1].piece) {
-            //&& board[p.x + 1][p.y - 1].piece[1] != color) {
+        if(board[p.x + 1][p.y - 1] 
+            && board[p.x + 1][p.y - 1].piece 
+            && board[p.x + 1][p.y - 1].piece[1] != color) {
                 temp.push({x: p.x + 1, y: p.y - 1});
         }
-        if(board[p.x][p.y + 1] &&
-            board[p.x][p.y + 1].piece &&
-            board[p.x][p.y + 1].piece[2] === "e") {
+        if(board[p.x][p.y + 1]
+            && board[p.x][p.y + 1].piece
+            && board[p.x][p.y + 1].piece[2] === "e") {
                 temp.push({x: p.x + 1, y: p.y + 1})
         }
-        if(board[p.x][p.y - 1] &&
-            board[p.x][p.y - 1].piece &&
-            board[p.x][p.y - 1].piece[2] === "e") {
+        if(board[p.x][p.y - 1]
+            && board[p.x][p.y - 1].piece
+            && board[p.x][p.y - 1].piece[2] === "e") {
                 temp.push({x: p.x + 1, y: p.y - 1})
         }
     } else {
@@ -205,24 +204,24 @@ function pawn(board, p, color) {
                 temp.push({x: p.x - 2, y: p.y});
             }
         }
-        if(board[p.x - 1][p.y - 1] &&
-            board[p.x - 1][p.y - 1].piece) {
-            //&& board[p.x - 1][p.y - 1].piece[1] != color) {
+        if(board[p.x - 1][p.y - 1]
+            && board[p.x - 1][p.y - 1].piece
+            && board[p.x - 1][p.y - 1].piece[1] != color) {
                 temp.push({x: p.x - 1, y: p.y - 1});
         }
-        if(board[p.x - 1][p.y + 1] &&
-            board[p.x - 1][p.y + 1].piece) {
-            //&& board[p.x - 1][p.y + 1].piece[1] != color) {
+        if(board[p.x - 1][p.y + 1]
+            && board[p.x - 1][p.y + 1].piece
+            && board[p.x - 1][p.y + 1].piece[1] != color) {
                 temp.push({x: p.x - 1, y: p.y + 1});
         }
-        if(board[p.x][p.y + 1] &&
-            board[p.x][p.y + 1].piece &&
-            board[p.x][p.y + 1].piece[2] === "e") {
+        if(board[p.x][p.y + 1]
+            && board[p.x][p.y + 1].piece
+            && board[p.x][p.y + 1].piece[2] === "e") {
                 temp.push({x: p.x - 1, y: p.y + 1})
         }
-        if(board[p.x][p.y - 1] &&
-            board[p.x][p.y - 1].piece &&
-            board[p.x][p.y - 1].piece[2] === "e") {
+        if(board[p.x][p.y - 1]
+            && board[p.x][p.y - 1].piece
+            && board[p.x][p.y - 1].piece[2] === "e") {
                 temp.push({x: p.x - 1, y: p.y - 1})
         }
     }
@@ -239,45 +238,44 @@ function knight(board, p, color) {
     temp.push({x: p.x - 1, y: p.y - 2});
     temp.push({x: p.x - 2, y: p.y + 1});
     temp.push({x: p.x - 2, y: p.y - 1});
-    //temp = removeIlligal(temp, board, color);
-    return temp
+    return removeIlligal(removeOutside(temp), board, color)
 }
 
 function rook(board, p, color) {
     let temp = [];
     for(let i=p.x+1; i<8; i++) {
         if(board[i][p.y].piece) {
-            //if(board[i][p.y].piece[1] != color) {
+            if(board[i][p.y].piece[1] != color) {
                 temp.push({x: i, y: p.y});
-                break;
-            //} else if(board[i][p.y].piece[1] === color) break;
+            }
+            break;
         }
         temp.push({x: i, y: p.y});
     }
     for(let i=p.x-1; i>=0; i--) {
         if(board[i][p.y].piece) {
-            //if(board[i][p.y].piece[1] != color) {
+            if(board[i][p.y].piece[1] != color) {
                 temp.push({x: i, y: p.y});
-                break;
-            //} else if(board[i][p.y].piece[1] === color) break;
+            }
+            break;
         }
         temp.push({x: i, y: p.y});
     }
     for(let i=p.y+1; i<8; i++) {
         if(board[p.x][i].piece) {
-            //if(board[p.x][i].piece[1] != color) {
+            if(board[p.x][i].piece[1] != color) {
                 temp.push({x: p.x, y: i});
-                break;
-            //} else if(board[p.x][i].piece[1] === color) break;
+            }
+            break;
         }
         temp.push({x: p.x, y: i});
     }
     for(let i=p.y-1; i>=0; i--) {
         if(board[p.x][i].piece) {
-            //if(board[p.x][i].piece[1] != color) {
+            if(board[p.x][i].piece[1] != color) {
                 temp.push({x: p.x, y: i});
-                break;
-            //} else if(board[p.x][i].piece[1] === color) break;
+            }
+            break;
         }
         temp.push({x: p.x, y: i});
     }
@@ -288,37 +286,37 @@ function bishop(board, p, color) {
     let temp = [];
     for(let i=1; i<8-Math.max(p.x,p.y); i++) {
         if(board[p.x + i][p.y + i].piece) {
-            //if(board[p.x + i][p.y + i].piece[1] != color) {
+            if(board[p.x + i][p.y + i].piece[1] != color) {
                 temp.push({x: p.x + i, y: p.y + i});
-                break;
-            //} else if(board[p.x + i][p.y + i].piece[1] === color) break;
+            }
+            break;
         }
         temp.push({x: p.x + i, y: p.y + i});
     }
     for(let i=1; i<Math.min(p.x + 1, 8 - p.y); i++) {
         if(board[p.x - i][p.y + i].piece) {
-            //if(board[p.x - i][p.y + i].piece[1] != color) {
+            if(board[p.x - i][p.y + i].piece[1] != color) {
                 temp.push({x: p.x - i, y: p.y + i});
-                break;
-            //} else if(board[p.x - i][p.y + i].piece[1] === color) break;
+            }
+            break;
         }
         temp.push({x: p.x - i, y: p.y + i});
     }
     for(let i=1; i<Math.min(p.x,p.y) + 1; i++) {
         if(board[p.x - i][p.y - i].piece) {
-            //if(board[p.x - i][p.y - i].piece[1] != color) {
+            if(board[p.x - i][p.y - i].piece[1] != color) {
                 temp.push({x: p.x - i, y: p.y - i});
-                break;
-            //} else if(board[p.x - i][p.y - i].piece[1] === color) break;
+            }
+            break;
         }
         temp.push({x: p.x - i, y: p.y - i});
     }
     for(let i=1; i<Math.min(8 - p.x, p.y + 1); i++) {
         if(board[p.x + i][p.y - i].piece) {
-            //if(board[p.x + i][p.y - i].piece[1] != color) {
+            if(board[p.x + i][p.y - i].piece[1] != color) {
                 temp.push({x: p.x + i, y: p.y - i});
-                break;
-            //} else if(board[p.x + i][p.y - i].piece[1] === color) break;
+            }
+            break;
         }
         temp.push({x: p.x + i, y: p.y - i});
     }
@@ -339,8 +337,15 @@ function king(board, p, color) {
     temp.push({x: p.x, y: p.y - 1});
     temp.push({x: p.x - 1, y: p.y});
     temp.push({x: p.x - 1, y: p.y - 1});
-    temp = removeOutside(temp);
+    temp = removeIlligal(removeOutside(temp), board, color);
 
+    let final = []
+
+    temp.forEach((pos) => {
+        if(!isCheck(moveKing(board, p, pos), color)) final.push(pos);
+    })
+
+    /*
     let toRemove = getEnemyPossible(board, color);
     let final = [];
     loop1:
@@ -352,11 +357,12 @@ function king(board, p, color) {
         }
         final.push(temp[i]);
     }
+    */
 
     return final;
 }
 
-function getEnemyPossible(board, color) {
+function isCheck(board, color) {
     let possible = [];
     for(let i=0; i<8; i++) {
         for(let j=0; j<8; j++) {
@@ -365,7 +371,19 @@ function getEnemyPossible(board, color) {
             }
         }
     }
-    return possible;
+    possible.forEach((pos) => {
+        if(board[pos.x][pos.y].piece[0] === "k") return true;
+    })
+    return false;
+}
+
+function moveKing(board, from, to) {
+    let newBoard = {
+        ...board
+    }
+    newBoard[to.x][to.y].piece = newBoard[from.x][from.y].piece
+    newBoard[from.x][from.y].piece = ""
+    return newBoard
 }
 
 function removeOutside(array) {
