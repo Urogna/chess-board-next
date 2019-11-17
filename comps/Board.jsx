@@ -343,7 +343,9 @@ function king(board, p, color) {
     let final = []
 
     temp.forEach((pos) => {
-        if(!isCheck(moveKing(board, p, pos), color)) final.push(pos);
+        if(!isCheck(moveKing(board, p, pos), color)) {
+            final.push(pos);
+        }
     })
 
     /*
@@ -372,18 +374,20 @@ function isCheck(board, color) {
             }
         }
     }
+    console.log(possible)
+    let is = false
     possible.forEach((pos) => {
-        if(board[pos.x][pos.y].piece[0] === "k") return true;
+        if(board[pos.x][pos.y].piece[1] === color && board[pos.x][pos.y].piece[0] === "k") is = true;
     })
-    return false;
+    console.log(is)
+    return is;
 }
 
 function moveKing(board, from, to) {
-    let newBoard = produce(board, draft => {
+    return produce(board, draft => {
         draft[to.x][to.y].piece = draft[from.x][from.y].piece
         draft[from.x][from.y].piece = ""
     })
-    return newBoard
 }
 
 function removeOutside(array) {
