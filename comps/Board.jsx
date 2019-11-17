@@ -1,5 +1,6 @@
 import React from 'react'
 import Square from './Square'
+import produce from 'immer'
 
 class Board extends React.Component {
 
@@ -378,11 +379,10 @@ function isCheck(board, color) {
 }
 
 function moveKing(board, from, to) {
-    let newBoard = {
-        ...board
-    }
-    newBoard[to.x][to.y].piece = newBoard[from.x][from.y].piece
-    newBoard[from.x][from.y].piece = ""
+    let newBoard = produce(board, draft => {
+        draft[to.x][to.y].piece = draft[from.x][from.y].piece
+        draft[from.x][from.y].piece = ""
+    })
     return newBoard
 }
 
